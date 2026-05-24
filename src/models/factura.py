@@ -156,3 +156,42 @@ class Factura:
         if self.estado == EstadoFactura.ANULADA:
             raise ValueError("La factura ya está anulada.")
         self.estado = EstadoFactura.ANULADA
+
+    # ------------------------------------------------------------------ #
+    # Serialización / Deserialización
+    # ------------------------------------------------------------------ #
+    def to_dict(self) -> dict:
+        data = {
+            "id_factura": self.id_factura,
+            "id_cliente": self.id_cliente,
+            "nombre_cliente": self.nombre_cliente,
+            "fecha_emision": self.fecha_emision,
+            "fecha_vencimiento": self.fecha_vencimiento,
+            "lineas": [l.to_dict() for l in self.lineas],
+            "estado": self.estado.value,
+            "notas": self.notas,
+        }
+        return data
+
+    @classmethod
+    def from_dict(cls, data: dict) -> "Factura":
+        lineas = [LineaFactura.from_dict(l) for l in data.get("lineas", [])]
+        return cls(
+            id_factura=data["id_factura"],
+            id_cliente=data["id_cliente"],
+            nombre_cliente=data["nombre_cliente"],
+            fecha_emision=data["fecha_emision"],
+            fecha_vencimiento=data["fecha_vencimiento"],
+            lineas=lineas,
+            estado=EstadoFactura(data.get("estado", "PENDIENTE")),
+            notas=data.get("notas", ""),
+        )
+
+    def __str__(self) -> str:
+        return (
+            f"Factura [{self.id_factura}] - Cliente: {self.nombre_cliente} | "
+            f"Total: ${self.total:,.2f} | Estado: {self.estado.value}"
+        )
+
+    def __repr__(self) -> str:
+        return f"Factura(id='{self.id_factura}', cliente='{self.id_cliente}', total={self.total})"
