@@ -135,3 +135,24 @@ class Factura:
             self.estado == EstadoFactura.PENDIENTE
             and self.fecha_vencimiento < hoy
         )
+
+    # ------------------------------------------------------------------ #
+    # Operaciones
+    # ------------------------------------------------------------------ #
+    def agregar_linea(self, linea: LineaFactura) -> None:
+        """Agrega una línea de detalle a la factura."""
+        if self.estado != EstadoFactura.PENDIENTE:
+            raise ValueError(
+                f"No se puede modificar una factura en estado '{self.estado.value}'."
+            )
+        self.lineas.append(linea)
+
+    def marcar_pagada(self) -> None:
+        if self.estado != EstadoFactura.PENDIENTE:
+            raise ValueError("Solo se puede pagar una factura PENDIENTE.")
+        self.estado = EstadoFactura.PAGADA
+
+    def anular(self) -> None:
+        if self.estado == EstadoFactura.ANULADA:
+            raise ValueError("La factura ya está anulada.")
+        self.estado = EstadoFactura.ANULADA
