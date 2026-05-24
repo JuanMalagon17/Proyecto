@@ -8,7 +8,7 @@ Aplica:
 """
 import json
 import os
-from typing import List, Optional
+from typing import Any, List, Optional, cast
 
 from src.dao.interface_dao import IDao
 from src.models.cliente import Cliente
@@ -30,8 +30,8 @@ class ClienteDao(IDao[Cliente]):
         Args:
             ruta_json: Ruta al archivo JSON de persistencia.
         """
-        self._ruta = ruta_json
-        self._clave = "clientes"
+        self._ruta: str = ruta_json
+        self._clave: str = "clientes"
         self._asegurar_archivo()
 
     # ------------------------------------------------------------------ #
@@ -40,7 +40,9 @@ class ClienteDao(IDao[Cliente]):
     def _asegurar_archivo(self) -> None:
         """Crea el archivo JSON con estructura base si no existe."""
         if not os.path.exists(self._ruta):
-            os.makedirs(os.path.dirname(self._ruta), exist_ok=True)
+            ruta_dir = os.path.dirname(self._ruta)
+            if ruta_dir:
+                os.makedirs(ruta_dir, exist_ok=True)
             self._escribir({self._clave: []})
         else:
             datos = self._leer()
@@ -48,20 +50,26 @@ class ClienteDao(IDao[Cliente]):
                 datos[self._clave] = []
                 self._escribir(datos)
 
-    def _leer(self) -> dict:
+    def _leer(self) -> dict[str, Any]:
         """Lee y retorna el contenido completo del JSON."""
         with open(self._ruta, "r", encoding="utf-8") as f:
-            return json.load(f)
+            datos_raw = json.load(f)
+            if isinstance(datos_raw, dict):
+                return cast(dict[str, Any], datos_raw)
+            return {self._clave: []}
 
-    def _escribir(self, datos: dict) -> None:
+    def _escribir(self, datos: dict[str, Any]) -> None:
         """Escribe el diccionario completo en el JSON."""
         with open(self._ruta, "w", encoding="utf-8") as f:
             json.dump(datos, f, ensure_ascii=False, indent=2)
 
-    def _obtener_lista(self) -> List[dict]:
-        return self._leer().get(self._clave, [])
+    def _obtener_lista(self) -> List[dict[str, Any]]:
+        lista_raw = self._leer().get(self._clave, [])
+        if isinstance(lista_raw, list):
+            return cast(List[dict[str, Any]], lista_raw)
+        return []
 
-    def _guardar_lista(self, lista: List[dict]) -> None:
+    def _guardar_lista(self, lista: List[dict[str, Any]]) -> None:
         datos = self._leer()
         datos[self._clave] = lista
         self._escribir(datos)
@@ -69,21 +77,21 @@ class ClienteDao(IDao[Cliente]):
     # ------------------------------------------------------------------ #
     # Implementación del contrato IDao
     # ------------------------------------------------------------------ #
-    def guardar(self, cliente: Cliente) -> Cliente:
+    def guardar(self, entidad: Cliente) -> Cliente:
         """Persiste un nuevo cliente. Lanza ValueError si ya existe."""
         lista = self._obtener_lista()
-        if any(c["id_cliente"] == cliente.id_cliente for c in lista):
+        if any(str(c.get("id_cliente")) == entidad.id_cliente for c in lista):
             raise ValueError(
-                f"Ya existe un cliente con id '{cliente.id_cliente}'."
+                f"Ya existe un cliente con id '{entidad.id_cliente}'."
             )
-        lista.append(cliente.to_dict())
+        lista.append(entidad.to_dict())
         self._guardar_lista(lista)
-        return cliente
+        return entidad
 
-    def buscar_por_id(self, id_cliente: str) -> Optional[Cliente]:
+    def buscar_por_id(self, id_entidad: str) -> Optional[Cliente]:
         """Busca un cliente por su id. Retorna None si no existe."""
         for datos in self._obtener_lista():
-            if datos["id_cliente"] == id_cliente:
+            if str(datos.get("id_cliente")) == id_entidad:
                 return Cliente.from_dict(datos)
         return None
 
@@ -91,22 +99,22 @@ class ClienteDao(IDao[Cliente]):
         """Retorna todos los clientes persistidos."""
         return [Cliente.from_dict(d) for d in self._obtener_lista()]
 
-    def actualizar(self, cliente: Cliente) -> Cliente:
+    def actualizar(self, entidad: Cliente) -> Cliente:
         """Actualiza un cliente existente. Lanza ValueError si no existe."""
         lista = self._obtener_lista()
         for i, datos in enumerate(lista):
-            if datos["id_cliente"] == cliente.id_cliente:
-                lista[i] = cliente.to_dict()
+            if str(datos.get("id_cliente")) == entidad.id_cliente:
+                lista[i] = entidad.to_dict()
                 self._guardar_lista(lista)
-                return cliente
+                return entidad
         raise ValueError(
-            f"No se encontró cliente con id '{cliente.id_cliente}' para actualizar."
+            f"No se encontró cliente con id '{entidad.id_cliente}' para actualizar."
         )
 
-    def eliminar(self, id_cliente: str) -> bool:
+    def eliminar(self, id_entidad: str) -> bool:
         """Elimina un cliente. Retorna True si fue eliminado."""
         lista = self._obtener_lista()
-        nueva_lista = [c for c in lista if c["id_cliente"] != id_cliente]
+        nueva_lista = [c for c in lista if str(c.get("id_cliente")) != id_entidad]
         if len(nueva_lista) == len(lista):
             return False
         self._guardar_lista(nueva_lista)
@@ -121,7 +129,7 @@ class ClienteDao(IDao[Cliente]):
         return [
             Cliente.from_dict(d)
             for d in self._obtener_lista()
-            if nombre_lower in d["nombre"].lower()
+            if nombre_lower in str(d.get("nombre", "")).lower()
         ]
 
     def listar_activos(self) -> List[Cliente]:
@@ -129,7 +137,7 @@ class ClienteDao(IDao[Cliente]):
         return [
             Cliente.from_dict(d)
             for d in self._obtener_lista()
-            if d.get("activo", True)
+            if bool(d.get("activo", True))
         ]
 
     def listar_con_saldo_pendiente(self) -> List[Cliente]:
@@ -137,5 +145,5 @@ class ClienteDao(IDao[Cliente]):
         return [
             Cliente.from_dict(d)
             for d in self._obtener_lista()
-            if d.get("saldo_pendiente", 0.0) > 0
+            if float(d.get("saldo_pendiente", 0.0)) > 0
         ]

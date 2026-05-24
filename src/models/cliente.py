@@ -3,8 +3,8 @@ Modelo: Cliente
 Representa la entidad Cliente en el dominio del sistema de gestión de cartera.
 Aplica principio SRP (Single Responsibility Principle) - solo modela los datos del cliente.
 """
-from dataclasses import dataclass, field, asdict
-from typing import Optional
+from dataclasses import dataclass, asdict
+from typing import Any
 
 
 @dataclass
@@ -30,7 +30,7 @@ class Cliente:
     saldo_pendiente: float = 0.0
 
     # ------------------------------------------------------------------ #
-    # Validaciones de negocio (princpio Tell, Don't Ask)
+    # Validaciones de negocio (principio Tell, Don't Ask)
     # ------------------------------------------------------------------ #
     def __post_init__(self) -> None:
         if not self.id_cliente or not self.id_cliente.strip():
@@ -45,21 +45,24 @@ class Cliente:
     # ------------------------------------------------------------------ #
     # Serialización / Deserialización (para persistencia JSON)
     # ------------------------------------------------------------------ #
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         """Convierte el cliente a diccionario para persistencia JSON."""
-        return asdict(self)
+        # Declaramos explícitamente dict[str, Any] para evitar 'MissingTypeArgument'
+        res: dict[str, Any] = asdict(self)
+        return res
 
     @classmethod
-    def from_dict(cls, data: dict) -> "Cliente":
+    def from_dict(cls, data: dict[str, Any]) -> "Cliente":
         """Reconstruye un Cliente desde un diccionario (lectura JSON)."""
+        # Casteamos rigurosamente cada clave mapeada para evitar 'UnknownArgumentType'
         return cls(
-            id_cliente=data["id_cliente"],
-            nombre=data["nombre"],
-            email=data["email"],
-            telefono=data["telefono"],
-            direccion=data["direccion"],
-            activo=data.get("activo", True),
-            saldo_pendiente=data.get("saldo_pendiente", 0.0),
+            id_cliente=str(data["id_cliente"]),
+            nombre=str(data["nombre"]),
+            email=str(data["email"]),
+            telefono=str(data["telefono"]),
+            direccion=str(data["direccion"]),
+            activo=bool(data.get("activo", True)),
+            saldo_pendiente=float(data.get("saldo_pendiente", 0.0)),
         )
 
     # ------------------------------------------------------------------ #
