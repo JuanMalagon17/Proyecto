@@ -16,7 +16,7 @@
       "telefono": "6076543210",
       "direccion": "Medellín",
       "activo": true,
-      "saldo_pendiente": 4500000.0
+      "saldo_pendiente": 0.0
     },
     {
       "id_cliente": "CLI003",
@@ -25,7 +25,7 @@
       "telefono": "6013219876",
       "direccion": "Bogotá",
       "activo": true,
-      "saldo_pendiente": 1250000.0
+      "saldo_pendiente": 6050000.0
     }
   ],
   "productos": [
@@ -35,7 +35,7 @@
       "descripcion": "Software ERP",
       "precio_unitario": 4800000.0,
       "costo_unitario": 1200000.0,
-      "stock": 48,
+      "stock": 47,
       "activo": true
     },
     {
@@ -98,7 +98,7 @@
           "costo_unitario": 600000.0
         }
       ],
-      "estado": "PENDIENTE",
+      "estado": "PAGADA",
       "notas": ""
     },
     {
@@ -114,10 +114,27 @@
           "cantidad": 5,
           "precio_unitario": 250000.0,
           "costo_unitario": 80000.0
+        },
+        {
+          "id_producto": "PRD001",
+          "nombre_producto": "Licencia ERP Anual",
+          "cantidad": 1,
+          "precio_unitario": 4800000.0,
+          "costo_unitario": 1200000.0
         }
       ],
       "estado": "PENDIENTE",
       "notas": ""
+    },
+    {
+      "id_factura": "FAC-2026-004",
+      "id_cliente": "CLI001",
+      "nombre_cliente": "Tech Solutions SAS",
+      "fecha_emision": "2026-05-24",
+      "fecha_vencimiento": "2026-05-24",
+      "lineas": [],
+      "estado": "PENDIENTE",
+      "notas": "Importante crear las facturas"
     }
   ]
 }
