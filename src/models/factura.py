@@ -15,3 +15,21 @@ class EstadoFactura(str, Enum):
     PAGADA = "PAGADA"
     VENCIDA = "VENCIDA"
     ANULADA = "ANULADA"
+
+@dataclass
+class LineaFactura:
+    """
+    Línea de detalle dentro de una factura.
+
+    Atributos:
+        id_producto (str): Referencia al producto facturado.
+        nombre_producto (str): Nombre snapshot al momento de la factura.
+        cantidad (int): Unidades vendidas.
+        precio_unitario (float): Precio al momento de la venta.
+        costo_unitario (float): Costo al momento de la venta (para ROA).
+    """
+    id_producto: str
+    nombre_producto: str
+    cantidad: int
+    precio_unitario: float
+    costo_unitario: float = 0.0
