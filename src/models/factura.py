@@ -67,3 +67,71 @@ class LineaFactura:
             precio_unitario=data["precio_unitario"],
             costo_unitario=data.get("costo_unitario", 0.0),
         )
+
+
+@dataclass
+class Factura:
+    """
+    Entidad principal de dominio: Factura de venta.
+
+    Atributos:
+        id_factura (str): Número único de la factura.
+        id_cliente (str): Cliente al que se emite.
+        nombre_cliente (str): Nombre snapshot del cliente.
+        fecha_emision (str): Fecha de emisión (ISO 8601: YYYY-MM-DD).
+        fecha_vencimiento (str): Fecha límite de pago.
+        lineas (List[LineaFactura]): Detalle de productos/servicios.
+        estado (EstadoFactura): Estado actual de la factura.
+        notas (str): Observaciones adicionales.
+    """
+    id_factura: str
+    id_cliente: str
+    nombre_cliente: str
+    fecha_emision: str
+    fecha_vencimiento: str
+    lineas: List[LineaFactura] = field(default_factory=list)
+    estado: EstadoFactura = EstadoFactura.PENDIENTE
+    notas: str = ""
+
+    def __post_init__(self) -> None:
+        if not self.id_factura or not self.id_factura.strip():
+            raise ValueError("El id_factura no puede estar vacío.")
+        if not self.id_cliente or not self.id_cliente.strip():
+            raise ValueError("El id_cliente no puede estar vacío.")
+        # Normalizar estado
+        if isinstance(self.estado, str):
+            self.estado = EstadoFactura(self.estado)
+
+    # ------------------------------------------------------------------ #
+    # Métricas financieras
+    # ------------------------------------------------------------------ #
+    @property
+    def total(self) -> float:
+        """Valor total de la factura (suma de subtotales)."""
+        return sum(l.subtotal for l in self.lineas)
+
+    @property
+    def costo_total(self) -> float:
+        """Costo total de todos los productos facturados."""
+        return sum(l.costo_total for l in self.lineas)
+
+    @property
+    def utilidad_bruta(self) -> float:
+        """Utilidad bruta = total - costo_total."""
+        return self.total - self.costo_total
+
+    @property
+    def margen_bruto_porcentual(self) -> float:
+        """Margen bruto % sobre ventas."""
+        if self.total == 0:
+            return 0.0
+        return (self.utilidad_bruta / self.total) * 100
+
+    @property
+    def esta_vencida(self) -> bool:
+        """True si la fecha de vencimiento ya pasó y la factura no está pagada."""
+        hoy = date.today().isoformat()
+        return (
+            self.estado == EstadoFactura.PENDIENTE
+            and self.fecha_vencimiento < hoy
+        )
