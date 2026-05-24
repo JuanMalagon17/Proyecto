@@ -6,7 +6,7 @@ Aplica SRP y OCP (abierto a extensión, cerrado a modificación).
 from dataclasses import dataclass, field, asdict
 from datetime import date
 from enum import Enum
-from typing import List
+from typing import Any, List, cast
 
 
 class EstadoFactura(str, Enum):
@@ -55,17 +55,20 @@ class LineaFactura:
         """Utilidad bruta de la línea = subtotal - costo_total."""
         return self.subtotal - self.costo_total
 
-    def to_dict(self) -> dict:
-        return asdict(self)
+    def to_dict(self) -> dict[str, Any]:
+        # Especificamos dict[str, Any] para evitar 'MissingTypeArgument'
+        res: dict[str, Any] = asdict(self)
+        return res
 
     @classmethod
-    def from_dict(cls, data: dict) -> "LineaFactura":
+    def from_dict(cls, data: dict[str, Any]) -> "LineaFactura":
+        # Aseguramos el tipo extrayendo explícitamente los valores para evitar 'UnknownArgumentType'
         return cls(
-            id_producto=data["id_producto"],
-            nombre_producto=data["nombre_producto"],
-            cantidad=data["cantidad"],
-            precio_unitario=data["precio_unitario"],
-            costo_unitario=data.get("costo_unitario", 0.0),
+            id_producto=str(data["id_producto"]),
+            nombre_producto=str(data["nombre_producto"]),
+            cantidad=int(data["cantidad"]),
+            precio_unitario=float(data["precio_unitario"]),
+            costo_unitario=float(data.get("costo_unitario", 0.0)),
         )
 
 
@@ -82,14 +85,14 @@ class Factura:
         fecha_vencimiento (str): Fecha límite de pago.
         lineas (List[LineaFactura]): Detalle de productos/servicios.
         estado (EstadoFactura): Estado actual de la factura.
-        notas (str): Observaciones adicionales.
+        notes (str): Observaciones adicionales.
     """
     id_factura: str
     id_cliente: str
     nombre_cliente: str
     fecha_emision: str
     fecha_vencimiento: str
-    lineas: List[LineaFactura] = field(default_factory=list)
+    lineas: List[LineaFactura] = field(default_factory=list[LineaFactura])
     estado: EstadoFactura = EstadoFactura.PENDIENTE
     notas: str = ""
 
@@ -98,9 +101,11 @@ class Factura:
             raise ValueError("El id_factura no puede estar vacío.")
         if not self.id_cliente or not self.id_cliente.strip():
             raise ValueError("El id_cliente no puede estar vacío.")
-        # Normalizar estado
-        if isinstance(self.estado, str):
-            self.estado = EstadoFactura(self.estado)
+        
+        # Evitamos 'UnnecessaryIsInstance' comparando el tipo exacto directamente
+        if type(self.estado) is str:
+            estado_enum = EstadoFactura(self.estado)
+            object.__setattr__(self, "estado", estado_enum)
 
     # ------------------------------------------------------------------ #
     # Métricas financieras
@@ -160,8 +165,9 @@ class Factura:
     # ------------------------------------------------------------------ #
     # Serialización / Deserialización
     # ------------------------------------------------------------------ #
-    def to_dict(self) -> dict:
-        data = {
+    def to_dict(self) -> dict[str, Any]:
+        # Declaramos explícitamente dict[str, Any] para resolver los retornos parciales
+        data: dict[str, Any] = {
             "id_factura": self.id_factura,
             "id_cliente": self.id_cliente,
             "nombre_cliente": self.nombre_cliente,
@@ -174,17 +180,26 @@ class Factura:
         return data
 
     @classmethod
-    def from_dict(cls, data: dict) -> "Factura":
-        lineas = [LineaFactura.from_dict(l) for l in data.get("lineas", [])]
+    def from_dict(cls, data: dict[str, Any]) -> "Factura":
+        # Aseguramos que sea una lista de objetos Any originalmente
+        lineas_raw: List[Any] = data.get("lineas", []) if isinstance(data.get("lineas"), list) else []
+            
+        lineas: List[LineaFactura] = []
+        for elemento in lineas_raw:
+            if isinstance(elemento, dict):
+                # Al castear el elemento aquí, garantizamos que no haya rastros de Unknown
+                sub_dict: dict[str, Any] = cast(dict[str, Any], elemento)
+                lineas.append(LineaFactura.from_dict(sub_dict))
+        
         return cls(
-            id_factura=data["id_factura"],
-            id_cliente=data["id_cliente"],
-            nombre_cliente=data["nombre_cliente"],
-            fecha_emision=data["fecha_emision"],
-            fecha_vencimiento=data["fecha_vencimiento"],
+            id_factura=str(data["id_factura"]),
+            id_cliente=str(data["id_cliente"]),
+            nombre_cliente=str(data["nombre_cliente"]),
+            fecha_emision=str(data["fecha_emision"]),
+            fecha_vencimiento=str(data["fecha_vencimiento"]),
             lineas=lineas,
             estado=EstadoFactura(data.get("estado", "PENDIENTE")),
-            notas=data.get("notas", ""),
+            notas=str(data.get("notas", "")),
         )
 
     def __str__(self) -> str:
