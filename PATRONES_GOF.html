@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Patrones GoF — Gestión de Cartera</title>
+<style>
+  @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&display=swap");
+  :root {
+    --bg: #0d1117; --surface: #161b22; --border: #30363d;
+    --accent: #58a6ff; --green: #3fb950; --orange: #d29922;
+    --text: #c9d1d9; --muted: #8b949e; --white: #f0f6fc;
+    --purple: #bc8cff;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: "IBM Plex Sans", sans-serif;
+    font-size: 15px; line-height: 1.7;
+  }
+  .header {
+    background: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #0d1117 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 3rem 2rem 2rem;
+    text-align: center;
+    position: relative; overflow: hidden;
+  }
+  .header::before {
+    content: ""; position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(88,166,255,.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .header h1 {
+    font-size: clamp(1.8rem, 4vw, 3rem); font-weight: 700;
+    color: var(--white); letter-spacing: -0.02em;
+  }
+  .header h1 span { color: var(--accent); }
+  .header p { color: var(--muted); margin-top: .5rem; font-size: .95rem; }
+  
+  .badge {
+    display: inline-block; background: rgba(88,166,255,.15);
+    border: 1px solid rgba(88,166,255,.3); color: var(--accent);
+    border-radius: 20px; padding: .2rem .8rem; font-size: .8rem;
+    margin: .8rem .2rem 0; font-family: "IBM Plex Mono", monospace;
+  }
+  .badge-dev {
+    display: inline-block; background: rgba(188,140,255,0.15); border: 1px solid rgba(188,140,255,0.4); color: var(--purple);
+    font-family: "IBM Plex Mono", monospace; padding: .15rem .6rem; border-radius: 4px; font-size: .8rem;
+  }
+  
+  .container { max-width: 1500px; margin: 0 auto; padding: 2rem 1.5rem; }
+  
+  .stats-bar {
+    display: flex; gap: 2rem; flex-wrap: wrap; background: var(--surface);
+    border: 1px solid var(--border); border-radius: 8px; padding: 1.2rem 1.5rem; margin: 2rem 0;
+  }
+  .stat { flex: 1; min-width: 180px; text-align: left; }
+  .stat-n { font-size: 1.8rem; font-weight: 700; color: var(--accent); font-family: "IBM Plex Mono", monospace; }
+  .stat-l { font-size: .8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+
+  h2 {
+    font-size: 1.6rem; color: var(--white); font-weight: 600;
+    margin: 3rem 0 1rem; padding-bottom: .5rem; border-bottom: 2px solid var(--accent);
+  }
+  h3 { font-size: 1.25rem; color: var(--white); font-weight: 600; margin: 2rem 0 .6rem; }
+  p { margin: .6rem 0; }
+  
+  .table-wrapper { overflow-x: auto; margin: 1rem 0 2rem; border-radius: 8px; border: 1px solid var(--border); }
+  table { width: 100%; border-collapse: collapse; font-size: .85rem; }
+  thead tr { background: var(--surface); }
+  th {
+    padding: .8rem 1rem; text-align: left; font-weight: 600; color: var(--accent);
+    font-family: "IBM Plex Mono", monospace; font-size: .78rem; border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  td { padding: .8rem 1rem; vertical-align: top; border-bottom: 1px solid rgba(48,54,61,.6); line-height: 1.5; }
+  tr:hover td { background: rgba(88,166,255,0.02); }
+  
+  pre {
+    background: #161b22; border: 1px solid var(--border); border-radius: 8px;
+    padding: 1.2rem 1.4rem; overflow-x: auto; margin: 1rem 0; position: relative;
+  }
+  pre::before {
+    content: "python"; position: absolute; top: .5rem; right: .8rem;
+    font-size: .7rem; color: var(--muted); font-family: "IBM Plex Mono", monospace;
+  }
+  .console-block::before {
+    content: "bash" !important;
+  }
+  code { font-family: "IBM Plex Mono", monospace; font-size: .83rem; }
+  p code { background: rgba(88,166,255,.1); color: var(--accent); padding: .1em .35em; border-radius: 3px; }
+  
+  blockquote {
+    border-left: 3px solid var(--accent); padding: .5rem 1rem;
+    background: rgba(88,166,255,.05); margin: 1rem 0; border-radius: 0 6px 6px 0;
+  }
+  hr { border: none; border-top: 1px solid var(--border); margin: 2.5rem 0; }
+  strong { color: var(--white); }
+  .dev-block { margin-top: 0.5rem; display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+  .pattern-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; margin-bottom: 2rem; }
+  
+  ul.cell-list { list-style: none; padding-left: 0; }
+  ul.cell-list li::before { content: "• "; color: var(--accent); }
+  ul.cell-list li.pro::before { content: "+ "; color: var(--green); }
+  ul.cell-list li.contra::before { content: "- "; color: var(--orange); }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <h1>Patrones de Diseño <span>GoF</span></h1>
+  <p>Sistema de Gestión Financiera de Cartera — Arquitectura de Software</p>
+  <div>
+    <span class="badge">Lenguajes de Programación II</span>
+    <span class="badge">Universidad de La Salle</span>
+    <span class="badge">Mayo 2026</span>
+  </div>
+</header>
+
+<div class="container">
+  <h2>Estructura del Proyecto y Cohesión de Equipo</h2>
+  <blockquote>
+    <p><strong>Proyecto:</strong> Software de Gestión de Clientes, Ventas y Control de Cartera Financiera.<br />
+    <strong>Metodología de Integración:</strong> Desarrollo modular distribuido por componentes de negocio mediante ramas Git independientes (<code>dev_cpena86</code>, <code>dev_jmalagon72</code>, <code>dev_sgutierrez78</code>).</p>
+  </blockquote>
+
+  <div class="stats-bar">
+    <div class="stat">
+      <div class="stat-n">S. Gutierrez</div>
+      <div class="stat-l">Módulo Facturación</div>
+    </div>
+    <div class="stat">
+      <div class="stat-n">J.P. Malagón</div>
+      <div class="stat-l">Módulo Clientes</div>
+    </div>
+    <div class="stat">
+      <div class="stat-n">C.R. Peña</div>
+      <div class="stat-l">Módulo Productos</div>
+    </div>
+    <div class="stat">
+      <div class="stat-n">7 / 23</div>
+      <div class="stat-l">Patrones GoF Aplicados</div>
+    </div>
+  </div>
+
+  <hr />
+
+  <h2>Tabla General Completa de los 23 Patrones GoF</h2>
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Nombre Patrón</th>
+          <th>Categoría</th>
+          <th>Problema que Resuelve & Diagrama Conceptual</th>
+          <th>Casos de Uso en el Sistema (Cartera)</th>
+          <th>Ventajas & Desventajas</th>
+          <th>Patrones Relacionados</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td><strong>Abstract Factory</strong></td>
+          <td>Creacional</td>
+          <td>Familias de objetos sin especificar clases concretas.<br><code>AbstractFactory ➔ ConcrFactory</code></td>
+          <td>Creación de ecosistemas completos de bases de datos (SQL vs NoSQL vs JSON) según entorno.</td>
+          <td style="min-width: 220px;">
+            <ul class="cell-list">
+              <li class="pro">Aislamiento estricto de configuraciones.</li>
+              <li class="contra">Añadir nuevos productos obliga a modificar todas las fábricas.</li>
+            </ul>
+          </td>
+          <td><code>Factory Method</code>, <code>Prototype</code></td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td><strong>Builder</strong></td>
+          <td>Creacional</td>
+          <td>Construcción paso a paso de objetos de alta complejidad.<br><code>Director ➔ Builder ➔ Product</code></td>
+          <td>Construcción de <code>Factura</code> calculando dinámicamente subtotales, IVA y validando stock en línea.</td>
+          <td>
+            <ul class="cell-list">
+              <li class="pro">Control preciso y seguro sobre el estado inicial del modelo.</li>
+              <li class="contra">Requiere crear un builder paralelo por cada clase compleja.</li>
+            </ul>
+          </td>
+          <td><code>Abstract Factory</code>, <code>Composite</code></td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td><strong>Factory Method</strong></td>
+          <td>Creacional</td>
+          <td>Delega la instanciación de clases hijas a subclases herederas.<br><code>Creator ⮪ ConcreteCreator</code></td>
+          <td>Inicialización automatizada de DAOs de pruebas (<code>InMemoryDao</code>) o producción (<code>JsonDao</code>).</td>
+          <td>
+            <ul class="cell-list">
+              <li class="pro">Desacopla controladores de implementaciones físicas de persistencia.</li>
+              <li class="contra">Aumenta el número de clases base iniciales del proyecto.</li>
+            </ul>
+          </td>
+          <td><code>Abstract Factory</code>, <code>Template Method</code></td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td><strong>Prototype</strong></td>
+          <td>Creacional</td>
+          <td>Clonación exacta de instancias mitigando el constructor.<br><code>Prototype.clone()</code></td>
+          <td>Duplicación de plantillas estándar de cobro recurrentes o catálogos base para ediciones rápidas.</td>
+          <td>
+            <ul class="cell-list">
+              <li class="pro">Evita el costo computacional de consultas pesadas consecutivas a la BD.</li>
+              <li class="contra">Clonar objetos con dependencias circulares es complejo.</li>
+            </ul>
+          </td>
+          <td><code>Abstract Factory</code>, <code>Memento</code></td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td><strong>Singleton</strong></td>
+          <td>Creacional</td>
+          <td>Instancia de acceso global y único bajo hilos concurrentes.<br><code>_instance + lock thread-safe</code></td>
+          <td>Estructura de lectura de variables globales y rutas del proyecto en <code>ConfiguracionApp</code>.</td>
+          <td>
+            <ul class="cell-list">
+              <li class="pro">Garantiza el control de recursos críticos de la memoria.</li>
+              <li class="contra">Dificulta drásticamente el aislamiento de pruebas unitarias.</li>
+            </ul>
+          </td>
+          <td><code>Abstract Factory</code>, <code>Facade</code></td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td><strong>Adapter</strong></td>
+          <td>Estructural</td>
+          <td>Convierte interfaces incompatibles en una esperada.<br><code>Target ⮪ Adapter ➔ Adaptee</code></td>
+          <td>Adaptación de llamadas a pasarelas bancarias externas que usan estructuras XML/Soap legadas.</td>
+          <td>
+            <ul class="cell-list">
+              <li class="pro">Reutilización limpia de bibliotecas e infraestructura externa.</li>
+              <li class="contra">Añade complejidad de sobrecapas innecesarias si la API cambia.</li>
+            </ul>
+          </td>
+          <td><code>Bridge</code>, <code>Decorator</code></td>
+        </tr>
+        <tr>
+          <td>7</td>
+          <td><strong>Bridge</strong></td>
+          <td>Estructural</td>
+          <td>Desacopla una abstracción de su implementación base.<br><code>Abstraction ➔ Implementor</code></td>
+          <td>Canales de alertas de cartera (SMS, Email) separados de las lógicas de mensajería del servidor.</td>
+          <td>
+            <ul class="cell-list">
+              <li class="pro">Ambas capas escalan de forma ortogonal e independiente.</li>
+              <li class="contra">Requiere un diseño arquitectónico sumamente abstracto y maduro.</li>
+            </ul>
+          </td>
+          <td><code>Abstract Factory</code>, <code>Adapter</code></td>
+        </tr>
+        <tr>
+          <td>8</td>
+          <td><strong>Composite</strong></td>
+          <td>Estructural</td>
+          <td>Estructuras de objetos jerárquicos compuestos en árbol.<br><code>Comp ⮪ Leaf / Composite</code></td>
+          <td>Estructuración de paquetes o combos de cobro que agrupan sub-ítems individuales de carpintería.</td>
+          <td>
+            <ul class="cell-list">
+              <li class="pro">Tratamiento unificado e idéntico para estructuras simples o complejas.</li>
+              <li class="contra">Es difícil restringir tipos de hojas específicas por código base.</li>
+            </ul>
+          </td>
+          <td><code>Builder</code>, <code>Flyweight</code>, <code>Visitor</code></td>
+        </tr>
+        <tr>
+          <td>9</td>
+          <td><strong>Decorator</strong></td>
+          <td>Estructural</td>
+          <td>Inyección de responsabilidades dinámicas en tiempo de ejecución.<br><code>Comp ⮪ Decorator ➔ Comp</code></td>
+          <td>Intercepción en <code>ValidarLimiteCreditoDecorator</code> para bloquear transacciones por mora.</td>
+          <td>
+            <ul class="cell-list">
+              <li class="pro">Evita el antipatrón de herencia múltiple masiva.</li>
+              <li class="contra">El rastreo de fallas se complica al encadenar múltiples decoradores.</li>
+            </ul>
+          </td>
+          <td><code>Adapter</code>, <code>Proxy</code></td>
+        </tr>
+        <tr>
+          <td>10</td>
+          <td><strong>Facade</strong></td>
+          <td>Estructural</td>
+          <td>Interfaz unificada y simple frente a un subsistema complejo.<br><code>Facade ➔ Múltiples Controladores</code></td>
+          <td>Fachada de integración unificada <code>GestionCarteraFacade</code> para simplificar flujos cliente.</td>
+          <td>
+            <ul class="cell-list">
+              <li class="pro">Reduce drásticamente el acoplamiento directo entre capas de la app.</li>
+              <li class="contra">Puede convertirse en un objeto Dios (God Object) si absorbe de más.</li>
+            </ul>
+          </td>
+          <td><code>Abstract Factory</code>, <code>Singleton</code>, <code>Mediator</code></td>
+        </tr>
+        <tr>
+          <td>11</td>
+          <td><strong>Flyweight</strong></td>
+          <td>Estructural</td>
+          <td>Compartición eficiente de objetos idénticos redundantes.<br><code>FlyweightFactory ➔ SharedState</code></td>
+          <td>Gestión en memoria RAM de prefijos repetitivos como tipos de divisas o categorías de productos.</td>
+          <td>
+            <ul class="cell-list">
+              <li class="pro">Ahorro drástico y medible de memoria en procesos batch pesados.</li>
+              <li class="contra">Introduce una sobrecarga de CPU al buscar claves en diccionarios.</li>
+            </ul>
+          </td>
+          <td><code>Composite</code>, <code>State</code></td>
+        </tr>
+        <tr>
+          <td>12</td>
+          <td><strong>Proxy</strong></td>
+          <td>Estructural</td>
+          <td>Control de accesos intermedio a un objeto objetivo.<br><code>Proxy ➔ RealSubject</code></td>
+          <td>Carga diferida (Lazy Loading) del histórico masivo de facturación de un cliente en mora.</td>
+          <td>
+            <ul class="cell-list">
+              <li class="pro">Permite optimizar rendimiento e inyectar capas de seguridad invisibles.</li>
+              <li class="contra">La respuesta del sistema puede retrasarse por la validación del Proxy.</li>
+            </ul>
+          </td>
+          <td><code>Adapter</code>, <code>Decorator</code></td>
+        </tr>
+        <tr>
+          <td>13</td>
+          <td><strong>Chain of Responsibility</strong></td>
+          <td>Comportamiento</td>
+          <td>Secuencia lineal de manejadores para procesar peticiones.<br><code>Handler ➔ NextHandler</code></td>
+          <td>Túnel secuencial de validación de cierres financieros (Validar ID, Validar Deuda, Validar Alerta).</td>
+          <td>
+            <ul class="cell-list">
+              <li class="pro">Cumple el Principio de Responsabilidad Única (SRP) de forma estricta.</li>
+              <li class="contra">Una petición puede quedar sin procesar si la cadena no tiene salida.</li>
+            </ul>
+          </td>
+          <td><code>Command</code>, <code>Composite</code></td>
+        </tr>
+        <tr>
+          <td>14</td>
+          <td><strong>Command</strong></td>
+          <td>Comportamiento</td>
+          <td>Encapsula peticiones convirtiéndolas en objetos independientes.<br><code>Invoker ➔ Command ➔ Receiver</code></td>
+          <td>Estructuración de acciones financieras reversibles (Undo) mediante <code>ComandoPagarFactura</code>.</td>
+          <td>
+            <ul class="cell-list">
+              <li class="pro">Habilita el encolamiento, logs históricos y reversión transaccional limpia.</li>
+              <li class="contra">Eleva la cantidad de sub-clases para manejar comandos atómicos.</li>
+            </ul>
+          </td>
+          <td><code>Chain of Resp.</code>, <code>Memento</code></td>
+        </tr>
+        <tr>
+          <td>15</td>
+          <td><strong>Interpreter</strong></td>
+          <td>Comportamiento</td>
+          <td>Evaluación gramatical o reglas de negocio internas.<br><code>Expr ⮪ TermExpr / NonTermExpr</code></td>
+          <td>Parseo automático de strings de búsqueda dinámicos para el filtrado avanzado de clientes.</td>
+          <td>
+            <ul class="cell-list">
+              <li class="pro">Fácil extensión y modificación de gramáticas propias sobre consultas.</li>
+              <li class="contra">Eficiencia comprometida si el árbol sintáctico crece exponencialmente.</li>
+            </ul>
+          </td>
+          <td><code>Composite</code>, <code>Iterator</code>, <code>Visitor</code></td>
+        </tr>
+        <tr>
+          <td>16</td>
+          <td><strong>Iterator</strong></td>
+          <td>Comportamiento</td>
+          <td>Recorrido secuencial abstraído sobre colecciones.<br><code>Iterator ⮪ ConcreteIterator</code></td>
+          <td>Estructura interna para paginar y leer lotes masivos de saldos vencidos sin mutar la lista.</td>
+          <td>
+            <ul class="cell-list">
+              <li class="pro">Oculta por completo la implementación de la estructura subyacente.</li>
+              <li class="contra">Resulta innecesario si la colección es simple y lineal (arrays nativos).</li>
+            </ul>
+          </td>
+          <td><code>Composite</code>, <code>Visitor</code></td>
+        </tr>
+        <tr>
+          <td>17</td>
+          <td><strong>Mediator</strong></td>
+          <td>Comportamiento</td>
+          <td>Centralización conductual de comunicaciones complejas cruzadas.<br><code>Mediator ⮘➔ Colleague Classes</code></td>
+          <td>Coordinación central de triggers entre la consola de comandos, el actualizador de log y la BD.</td>
+          <td>
+            <ul class="cell-list">
+              <li class="pro">Elimina el código espagueti de dependencias cruzadas en controladores.</li>
+              <li class="contra">El mediador tiende a centralizar demasiada lógica de acoplamiento.</li>
+            </ul>
+          </td>
+          <td><code>Facade</code>, <code>Observer</code></td>
+        </tr>
+        <tr>
+          <td>18</td>
+          <td><strong>Memento</strong></td>
+          <td>Comportamiento</td>
+          <td>Captura y restauración segura de estados internos privados.<br><code>Originator ➔ Memento ⮪ Caretaker</code></td>
+          <td>Copias rápidas de respaldo de los estados financieros de las cuentas antes de cierres masivos.</td>
+          <td>
+            <ul class="cell-list">
+              <li class="pro">Respeta el encapsulamiento sin violar los atributos privados del objeto.</li>
+              <li class="contra">El consumo de memoria RAM se dispara si los estados son muy pesados.</li>
+            </ul>
+          </td>
+          <td><code>Command</code>, <code>Prototype</code></td>
+        </tr>
+        <tr>
+          <td>19</td>
+          <td><strong>Observer</strong></td>
+          <td>Comportamiento</td>
+          <td>Suscripción reactiva automática ante cambios de estado.<br><code>Subject.notify() ➔ Observer.update()</code></td>
+          <td>Disparador de alertas por correo y registro en auditorías cuando una <code>Factura</code> pasa a mora.</td>
+          <td>
+            <ul class="cell-list">
+              <li class="pro">Establece relaciones dinámicas desacopladas en tiempo de ejecución.</li>
+              <li class="contra">El orden de notificación a los observadores suscritos es aleatorio.</li>
+            </ul>
+          </td>
+          <td><code>Mediator</code>, <code>State</code></td>
+        </tr>
+        <tr>
+          <td>20</td>
+          <td><strong>State</strong></td>
+          <td>Comportamiento</td>
+          <td>Modificación del comportamiento dinámico según estados internos.<br><code>Context ➔ State.handle()</code></td>
+          <td>Ciclo de transiciones de cobro del sistema: <code>PENDIENTE</code>, <code>PAGADA</code> y <code>ANULADA</code>.</td>
+          <td>
+            <ul class="cell-list">
+              <li class="pro">Elimina por completo condicionales (if/else, switch) extensos y anidados.</li>
+              <li class="contra">Añade complejidad si el flujo de estados posee pocas mutaciones.</li>
+            </ul>
+          </td>
+          <td><code>Flyweight</code>, <code>Strategy</code></td>
+        </tr>
+        <tr>
+          <td>21</td>
+          <td><strong>Strategy</strong></td>
+          <td>Comportamiento</td>
+          <td>Familia de algoritmos e intercambios lógicos dinámicos.<br><code>Context ➔ Strategy</code></td>
+          <td>Inyección de múltiples lógicas para exportación de reportes de cartera (CSV, JSON o TXT).</td>
+          <td>
+            <ul class="cell-list">
+              <li class="pro">Satisface el principio Abierto/Cerrado (OCP) al añadir algoritmos limpios.</li>
+              <li class="contra">El cliente debe conocer obligatoriamente la diferencia entre estrategias.</li>
+            </ul>
+          </td>
+          <td><code>Decorator</code>, <code>State</code></td>
+        </tr>
+        <tr>
+          <td>22</td>
+          <td><strong>Template Method</strong></td>
+          <td>Comportamiento</td>
+          <td>Esqueleto algorítmico rígido delegando pasos intermedios.<br><code>AbstractClass ⮪ ConcreteSubclass</code></td>
+          <td>Plantilla de lectura y procesamiento de extractos bancarios (Apertura, Lectura, Cierre).</td>
+          <td>
+            <ul class="cell-list">
+              <li class="pro">Maximiza de manera eficiente la reutilización de código de infraestructura.</li>
+              <li class="contra">Rigidez estructural alta; puede violar el principio de sustitución LSP.</li>
+            </ul>
+          </td>
+          <td><code>Factory Method</code>, <code>Strategy</code></td>
+        </tr>
+        <tr>
+          <td>23</td>
+          <td><strong>Visitor</strong></td>
+          <td>Comportamiento</td>
+          <td>Operaciones lógicas externas sin alterar clases destino.<br><code>Element.accept(Visitor)</code></td>
+          <td>Cálculo masivo e independiente de impuestos, retenciones e intereses de usura sobre facturas.</td>
+          <td>
+            <ul class="cell-list">
+              <li class="pro">Une operaciones relacionadas en una única entidad especializada externa.</li>
+              <li class="contra">Falla si la jerarquía de los elementos destino cambia con frecuencia.</li>
+            </ul>
+          </td>
+          <td><code>Composite</code>, <code>Iterator</code></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <hr />
+
+  <h2>Práctica: Evidencia de Implementación y Pruebas Unitarias</h2>
+
+  <div class="pattern-card">
+    <div class="dev-block">
+      <span class="badge-dev">Componente: Módulo de Productos</span>
+      <span class="badge-dev">Desarrollador: Caren Rossana Peña Castañeda</span>
+    </div>
+    <h3>Factory Method — <code>DaoFactory</code> e <code>InMemoryDaoFactory</code></h3>
+    <p><strong>Problema:</strong> El sistema requiere aislar la persistencia física de datos (catálogos de productos) para facilitar las pruebas automatizadas veloces sin alterar los archivos JSON de producción.</p>
+    <pre><code class="language-python">from abc import ABC, abstractmethod
+from src.dao.interface_dao import IDao
+from src.dao.producto_dao import ProductoDao
+from src.models.producto import Producto
+
+class DaoFactory(ABC):
+    """Fábrica abstracta de DAOs — Factory Method."""
+    @abstractmethod
+    def crear_producto_dao(self) -> IDao: ...
+    @abstractmethod
+    def crear_factura_dao(self) -> IDao: ...
+    @abstractmethod
+    def crear_cliente_dao(self) -> IDao: ...
+
+class InMemoryDaoFactory(DaoFactory):
+    """Implementación de pruebas unitarias con almacenamiento en diccionario."""
+    def __init__(self) -> None:
+        self._db = _InMemoryStore()
+    def crear_producto_dao(self) -> IDao: return self._db
+    def crear_factura_dao(self) -> IDao: return self._db
+    def crear_cliente_dao(self) -> IDao: return self._db
+
+class _InMemoryStore(IDao):
+    def __init__(self):
+        self._store = {}
+    def guardar(self, e):
+        uid = getattr(e, "id_producto", getattr(e, "id_factura", getattr(e, "id_cliente", None)))
+        self._store[uid] = e
+        return e
+    def buscar_por_id(self, id_): return self._store.get(id_)
+    def actualizar(self, e): return self.guardar(e)
+</code></pre>
+    <h4>Caso de Prueba Unitario Desarrollado</h4>
+    <pre><code class="language-python">def test_factory_in_memory_productos():
+    factory = InMemoryDaoFactory()
+    dao = factory.crear_producto_dao()
+    prod = Producto("P05", "Cama Doble Rosa", "Carpintería", 1800000, 900000, stock=10)
+    dao.guardar(prod)
+    assert dao.buscar_por_id("P05").nombre == "Cama Doble Rosa"
+</code></pre>
+  </div>
+
+  <div class="pattern-card">
+    <div class="dev-block">
+      <span class="badge-dev">Componente: Módulo de Clientes</span>
+      <span class="badge-dev">Desarrollador: Juan Pablo Malagón Sáenz</span>
+    </div>
+    <h3>Singleton & Decorator — <code>ConfiguracionApp</code> y <code>ValidarLimiteCreditoDecorator</code></h3>
+    <p><strong>Problema:</strong> Asegurar que variables de control de riesgo comercial se almacenen en una única instancia thread-safe, interceptando el guardado de facturas para denegar transacciones que excedan el crédito asignado.</p>
+    <pre><code class="language-python">import threading
+from src.dao.interface_dao import IDao
+from src.models.factura import Factura
+
+class ConfiguracionApp:
+    """Singleton thread-safe para variables globales."""
+    _instancia = None
+    _lock = threading.Lock()
+
+    def __new__(cls):
+        if cls._instancia is None:
+            with cls._lock:
+                if cls._instancia is None:
+                    cls._instancia = super().__new__(cls)
+                    cls._instancia._config = {"limite_defecto": 5000000.0}
+        return cls._instancia
+    
+    def obtener(self, clave: str): return self._config.get(clave)
+
+class ValidarLimiteCreditoDecorator(IDao):
+    """Decorator estructural para inyectar reglas de negocio sobre el DAO real."""
+    def __init__(self, dao_real: IDao, limite_credito: float) -> None:
+        self._dao = dao_real
+        self._limite = limite_credito
+
+    def guardar(self, factura: Factura) -> Factura:
+        if factura.total > self._limite:
+            raise ValueError(f"Operación bloqueada: Supera el límite de crédito de ${self._limite:,.2f}")
+        return self._dao.guardar(factura)
+</code></pre>
+    <h4>Caso de Prueba Unitario Desarrollado</h4>
+    <pre><code class="language-python">def test_singleton_y_decorador_limite_cliente():
+    cfg = ConfiguracionApp()
+    limite = cfg.obtener("limite_defecto")
+    
+    dao_memoria = InMemoryDaoFactory().crear_factura_dao() 
+    dao_decorado = ValidarLimiteCreditoDecorator(dao_memoria, limite_credito=limite)
+    
+    f_insegura = Factura("F01", "C01", "Cliente Riesgo", "2026-05-24", "2026-06-24")
+    f_insegura._total = 6000000.0  
+    
+    import pytest
+    with pytest.raises(ValueError, match="Operación bloqueada"):
+        dao_decorado.guardar(f_insegura)
+</code></pre>
+  </div>
+
+  <div class="pattern-card">
+    <div class="dev-block">
+      <span class="badge-dev">Componente: Módulo de Facturación</span>
+      <span class="badge-dev">Desarrollador: Sebastian Gutierrez Guayacundo</span>
+    </div>
+    <h3>Builder — <code>FacturaBuilder</code></h3>
+    <p><strong>Problema:</strong> La instanciación nativa de una factura involucra cálculos de fechas de emisión, ensamble ordenado de líneas de ítems y validaciones de stock en tiempo real que sobrecargan el constructor base.</p>
+    <pre><code class="language-python">from src.models.factura import Factura, LineaFactura
+from datetime import date
+
+class FacturaBuilder:
+    """Builder fluido para orquestar la construcción limpia de comprobantes de cartera."""
+    def __init__(self) -> None: self._reset()
+    def _reset(self) -> None:
+        self._id_factura = ""; self._id_cliente = ""; self._nombre_cliente = ""
+        self._fecha_emision = date.today().isoformat(); self._fecha_vencimiento = ""
+        self._lineas = []
+
+    def set_identificador(self, id_factura: str): self._id_factura = id_factura; return self
+    def set_cliente(self, id_cl: str, nom: str): self._id_cliente = id_cl; self._nombre_cliente = nom; return self
+    def set_vencimiento(self, fecha: str): self._fecha_vencimiento = fecha; return self
+
+    def agregar_linea(self, producto, cantidad: int):
+        if not producto.hay_stock_suficiente(cantidad):
+            raise ValueError(f"Stock insuficiente para '{producto.nombre}'.")
+        linea = LineaFactura(
+            id_producto=producto.id_producto,
+            nombre_producto=producto.nombre,
+            cantidad=cantidad,
+            precio_unitario=producto.precio_unitario,
+            costo_unitario=producto.costo_unitario 
+        )
+        self._lineas.append(linea)
+        return self
+
+    def build(self) -> Factura:
+        if not self._id_factura or not self._fecha_vencimiento:
+            raise ValueError("Datos obligatorios faltantes para construir la Factura.")
+        f = Factura(self._id_factura, self._id_cliente, self._nombre_cliente, self._fecha_emision, self._fecha_vencimiento)
+        for l in self._lineas: f.agregar_linea(l)
+        res = f; self._reset()
+        return res
+</code></pre>
+    <h4>Caso de Prueba Unitario Desarrollado</h4>
+    <pre><code class="language-python">def test_builder_factura_con_producto_integrado():
+    p = Producto("P9", "Mesa Comedor Colmena", "Muebles", 3500000, 1500000, stock=2)
+    factura = (FacturaBuilder()
+               .set_identificador("F-2026-99")
+               .set_cliente("C99", "Muebles Santamaria")
+               .set_vencimiento("2026-07-15")
+               .agregar_linea(p, 1).build())
+    assert factura.total == 3500000
+    assert len(factura.lineas) == 1
+</code></pre>
+  </div>
+
+  <div class="pattern-card" style="border: 1px solid var(--green); background: rgba(63,185,80,0.02);">
+    <div class="dev-block">
+      <span class="badge" style="background: rgba(63,185,80,0.2); color: var(--green); border-color: var(--green);">Ecosistema Unificado</span>
+      <span class="badge-dev">Integración de Arquitectura de Equipo</span>
+    </div>
+    <h3>Facade & Command — <code>GestionCarteraFacade</code> y <code>ComandoPagarFactura</code></h3>
+    <p><strong>Demostración de Trabajo Grupal:</strong> Integración cruzada. La clase <code>GestionCarteraFacade</code> toma los componentes de los tres desarrolladores y los expone mediante un punto de acceso unificado.</p>
+    <pre><code class="language-python">from abc import ABC, abstractmethod
+
+class ComandoFactura(ABC):
+    @abstractmethod
+    def ejecutar(self) -> None: ...
+
+class ComandoPagarFactura(ComandoFactura):
+    def __init__(self, dao, id_factura: str) -> None:
+        self._dao = dao; self._id = id_factura
+    def ejecutar(self) -> None:
+        factura = self._dao.buscar_por_id(self._id)
+        if factura:
+            factura.pagar()
+            self._dao.actualizar(factura)
+
+class GestionCarteraFacade:
+    """Orquestador de Fachada única del sistema."""
+    def __init__(self, factory_dao: DaoFactory) -> None:
+        self._factura_dao = factory_dao.crear_factura_dao()
+        self._cliente_dao = factory_dao.crear_cliente_dao()
+        self._producto_dao = factory_dao.crear_producto_dao()
+
+    def procesar_recaudo_caja(self, id_factura: str) -> bool:
+        cmd = ComandoPagarFactura(self._factura_dao, id_factura)
+        cmd.ejecutar()
+        return True
+</code></pre>
+  </div>
+
+  <h2>Ejecución de Pruebas y Cobertura Automatizada</h2>
+  <pre class="console-block"><code style="color: #a6e22e;">$ python -m unittest tests.test_patterns -v
+test_builder_factura_con_producto_integrado (tests.test_patterns.TestPatterns) ... ok
+test_builder_valida_obligatorios (tests.test_patterns.TestPatterns) ... ok
+test_command_cambia_estado_factura (tests.test_patterns.TestPatterns) ... ok
+test_command_historial_operaciones (tests.test_patterns.TestPatterns) ... ok
+test_decorator_bloquea_limite_excedido (tests.test_patterns.TestPatterns) ... ok
+test_decorator_permite_operacion_valida (tests.test_patterns.TestPatterns) ... ok
+test_facade_dashboard_financiero (tests.test_patterns.TestPatterns) ... ok
+test_facade_registra_ventas (tests.test_patterns.TestPatterns) ... ok
+test_factory_in_memory_productos (tests.test_patterns.TestPatterns) ... ok
+test_factory_method_crea_daos_correctos (tests.test_patterns.TestPatterns) ... ok
+test_singleton_mantiene_instancia_unica (tests.test_patterns.TestPatterns) ... ok
+test_singleton_y_decorador_limite_cliente (tests.test_patterns.TestPatterns) ... ok
+test_strategy_csv_genera_encabezados (tests.test_patterns.TestPatterns) ... ok
+test_strategy_json_genera_salida_valida (tests.test_patterns.TestPatterns) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 0.049s
+
+OK</code></pre>
+
+</div>
+
+</body>
+</html>
