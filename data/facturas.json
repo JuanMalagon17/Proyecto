@@ -1,0 +1,140 @@
+{
+  "clientes": [
+    {
+      "id_cliente": "CLI001",
+      "nombre": "Tech Solutions SAS",
+      "email": "info@techsol.co",
+      "telefono": "6012345678",
+      "direccion": "Bogotá",
+      "activo": true,
+      "saldo_pendiente": 0.0
+    },
+    {
+      "id_cliente": "CLI002",
+      "nombre": "Distribuidora Norte",
+      "email": "ventas@norte.co",
+      "telefono": "6076543210",
+      "direccion": "Medellín",
+      "activo": true,
+      "saldo_pendiente": 0.0
+    },
+    {
+      "id_cliente": "CLI003",
+      "nombre": "Consultores Andes",
+      "email": "andes@consul.co",
+      "telefono": "6013219876",
+      "direccion": "Bogotá",
+      "activo": true,
+      "saldo_pendiente": 6050000.0
+    }
+  ],
+  "productos": [
+    {
+      "id_producto": "PRD001",
+      "nombre": "Licencia ERP Anual",
+      "descripcion": "Software ERP",
+      "precio_unitario": 4800000.0,
+      "costo_unitario": 1200000.0,
+      "stock": 47,
+      "activo": true
+    },
+    {
+      "id_producto": "PRD002",
+      "nombre": "Consultoría TI (hora)",
+      "descripcion": "Hora especializada",
+      "precio_unitario": 250000.0,
+      "costo_unitario": 80000.0,
+      "stock": 185,
+      "activo": true
+    },
+    {
+      "id_producto": "PRD003",
+      "nombre": "Servidor Cloud (mes)",
+      "descripcion": "Instancia cloud",
+      "precio_unitario": 1500000.0,
+      "costo_unitario": 600000.0,
+      "stock": 97,
+      "activo": true
+    }
+  ],
+  "facturas": [
+    {
+      "id_factura": "FAC-2026-001",
+      "id_cliente": "CLI001",
+      "nombre_cliente": "Tech Solutions SAS",
+      "fecha_emision": "2026-05-24",
+      "fecha_vencimiento": "2026-06-30",
+      "lineas": [
+        {
+          "id_producto": "PRD001",
+          "nombre_producto": "Licencia ERP Anual",
+          "cantidad": 2,
+          "precio_unitario": 4800000.0,
+          "costo_unitario": 1200000.0
+        },
+        {
+          "id_producto": "PRD002",
+          "nombre_producto": "Consultoría TI (hora)",
+          "cantidad": 10,
+          "precio_unitario": 250000.0,
+          "costo_unitario": 80000.0
+        }
+      ],
+      "estado": "PAGADA",
+      "notas": ""
+    },
+    {
+      "id_factura": "FAC-2026-002",
+      "id_cliente": "CLI002",
+      "nombre_cliente": "Distribuidora Norte",
+      "fecha_emision": "2026-05-24",
+      "fecha_vencimiento": "2026-07-15",
+      "lineas": [
+        {
+          "id_producto": "PRD003",
+          "nombre_producto": "Servidor Cloud (mes)",
+          "cantidad": 3,
+          "precio_unitario": 1500000.0,
+          "costo_unitario": 600000.0
+        }
+      ],
+      "estado": "PAGADA",
+      "notas": ""
+    },
+    {
+      "id_factura": "FAC-2026-003",
+      "id_cliente": "CLI003",
+      "nombre_cliente": "Consultores Andes",
+      "fecha_emision": "2026-05-24",
+      "fecha_vencimiento": "2026-05-10",
+      "lineas": [
+        {
+          "id_producto": "PRD002",
+          "nombre_producto": "Consultoría TI (hora)",
+          "cantidad": 5,
+          "precio_unitario": 250000.0,
+          "costo_unitario": 80000.0
+        },
+        {
+          "id_producto": "PRD001",
+          "nombre_producto": "Licencia ERP Anual",
+          "cantidad": 1,
+          "precio_unitario": 4800000.0,
+          "costo_unitario": 1200000.0
+        }
+      ],
+      "estado": "PENDIENTE",
+      "notas": ""
+    },
+    {
+      "id_factura": "FAC-2026-004",
+      "id_cliente": "CLI001",
+      "nombre_cliente": "Tech Solutions SAS",
+      "fecha_emision": "2026-05-24",
+      "fecha_vencimiento": "2026-05-24",
+      "lineas": [],
+      "estado": "PENDIENTE",
+      "notas": "Importante crear las facturas"
+    }
+  ]
+}
