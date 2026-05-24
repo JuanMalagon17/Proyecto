@@ -24,12 +24,10 @@ gestion_cartera/
 │   ├── controllers/            ← Lógica de negocio y métricas
 │   └── patterns/               ← Implementación GoF (Builder, Strategy, etc.)
 ├── tests/
-│   ├── test_factura.py
-│   └── test_patterns.py
+│   ├── test (por entidad)      ← Creación de todos los test del modelo
 ├── analisis_cartera.py         ← Módulo de análisis avanzado con Pandas
-├── main.py                     ← Vista principal (View)
-├── requirements.txt
-└── README.md
+└── main.py                     ← Vista principal (View)
+
 ```
 
 ---
@@ -53,7 +51,7 @@ Para ejecutar el sistema completo y habilitar el procesamiento de datos financie
 ```bash
 # Clonar el repositorio
 git clone <url-del-repo>
-cd gestion_cartera
+cd Proyecto
 
 # (Opcional) Crear entorno virtual
 python -m venv venv
