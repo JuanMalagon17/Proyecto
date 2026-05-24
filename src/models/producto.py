@@ -4,6 +4,7 @@ Representa la entidad Producto/Servicio en el catálogo de ventas.
 Aplica principio SRP - solo modela los datos del producto.
 """
 from dataclasses import dataclass, asdict
+from typing import Any
 
 
 @dataclass
@@ -43,19 +44,22 @@ class Producto:
     # ------------------------------------------------------------------ #
     # Serialización / Deserialización
     # ------------------------------------------------------------------ #
-    def to_dict(self) -> dict:
-        return asdict(self)
+    def to_dict(self) -> dict[str, Any]:
+        """Convierte el producto a diccionario para persistencia JSON."""
+        res: dict[str, Any] = asdict(self)
+        return res
 
     @classmethod
-    def from_dict(cls, data: dict) -> "Producto":
+    def from_dict(cls, data: dict[str, Any]) -> "Producto":
+        """Reconstruye un Producto desde un diccionario (lectura JSON)."""
         return cls(
-            id_producto=data["id_producto"],
-            nombre=data["nombre"],
-            descripcion=data["descripcion"],
-            precio_unitario=data["precio_unitario"],
-            costo_unitario=data["costo_unitario"],
-            stock=data.get("stock", 0),
-            activo=data.get("activo", True),
+            id_producto=str(data["id_producto"]),
+            nombre=str(data["nombre"]),
+            descripcion=str(data["descripcion"]),
+            precio_unitario=float(data["precio_unitario"]),
+            costo_unitario=float(data["costo_unitario"]),
+            stock=int(data.get("stock", 0)),
+            activo=bool(data.get("activo", True)),
         )
 
     # ------------------------------------------------------------------ #
