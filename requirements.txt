@@ -1,0 +1,21 @@
+# ============================================================
+# Gestión Financiera de Cartera — Dependencias
+# ============================================================
+# El núcleo del proyecto usa ÚNICAMENTE la biblioteca estándar
+# de Python 3.11+. No requiere instalación adicional para correr.
+#
+# Dependencias opcionales para desarrollo:
+# ============================================================
+
+# Regenerar PATRONES_GOF.html desde el .md
+markdown>=3.5.2
+
+# Análisis de datos (preparación para la fase ML del proyecto)
+pandas>=2.2.0
+numpy>=1.26.0
+
+# Visualización financiera (preparación para dashboards)
+matplotlib>=3.8.0
+
+# Testing (opcional — unittest ya viene en Python)
+# pytest>=7.4.0
