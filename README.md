@@ -157,6 +157,9 @@ El sistema incluye pruebas para lógica de negocio y patrones GoF.
 ```bash
 # Ejecutar pruebas CRUD
 python -m unittest tests/test_factura.py -v
+python -m unittest tests/test_cliente.py -v
+python -m unittest tests/test_producto.py -v
+
 
 # Ejecutar pruebas de patrones
 python -m unittest tests/test_patterns.py -v
