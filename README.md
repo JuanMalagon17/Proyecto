@@ -253,7 +253,7 @@ python -m unittest tests/test_factura.py -v
 ## Ejecutar pruebas de Patrones GoF
 
 ```bash
-python -m unittest tests/test_patterns.py -v
+python -m unittest tests.test_patterns -v
 ```
 
 ## Ejecutar suite completa
