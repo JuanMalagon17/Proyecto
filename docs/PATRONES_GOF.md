@@ -2,7 +2,7 @@
 ## Sistema de Gestión Financiera de Cartera
 
 > **Asignatura:** Lenguajes de Programación II  
-> **Estudiante:** Sebastian Gutierrez Guayacundo  
+> **Estudiante:** Sebastian Gutierrez Guayacundo, Rossana Peña Castañeada, Juan Pablo Malagón Saenz  
 > **Universidad:** Universidad de La Salle (UNISALLE)  
 > **Fecha:** Mayo 2026
 
