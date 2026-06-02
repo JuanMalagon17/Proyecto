@@ -25,35 +25,152 @@
       "telefono": "6013219876",
       "direccion": "Bogotá",
       "activo": true,
-      "saldo_pendiente": 6050000.0
+      "saldo_pendiente": 0.0
+    },
+    {
+      "id_cliente": "CLI004",
+      "nombre": "SEBASTIAN GUTIERREZ GUAYACUNDO",
+      "email": "sebastian.gutierrez.guayacundo@gmail.com",
+      "telefono": "3142831686",
+      "direccion": "Calle 42 sur #92A-10",
+      "activo": true,
+      "saldo_pendiente": 0.0
+    },
+    {
+      "id_cliente": "CLI005",
+      "nombre": "Alimentos del Caribe ESP",
+      "email": "logistica@alimentoscaribe.com",
+      "telefono": "6053344556",
+      "direccion": "Barranquilla",
+      "activo": true,
+      "saldo_pendiente": 0.0
+    },
+    {
+      "id_cliente": "CLI006",
+      "nombre": "Inversiones Cafeteras S.A.",
+      "email": "admin@invcafe.com",
+      "telefono": "6068899001",
+      "direccion": "Manizales",
+      "activo": true,
+      "saldo_pendiente": 0.0
+    },
+    {
+      "id_cliente": "CLI007",
+      "nombre": "Logística y Transportes Valle",
+      "email": "gerencia@logivalle.co",
+      "telefono": "6024455667",
+      "direccion": "Cali",
+      "activo": true,
+      "saldo_pendiente": 0.0
+    },
+    {
+      "id_cliente": "CLI008",
+      "nombre": "Constructora e Inmobiliaria Horizonte",
+      "email": "proveedores@horizonte.com.co",
+      "telefono": "6017788990",
+      "direccion": "Chía",
+      "activo": true,
+      "saldo_pendiente": 100000.0
+    },
+    {
+      "id_cliente": "CLI009",
+      "nombre": "Salud Total del Pacífico",
+      "email": "compras@saludpacifico.org",
+      "telefono": "6023112233",
+      "direccion": "Buenaventura",
+      "activo": false,
+      "saldo_pendiente": 0.0
+    },
+    {
+      "id_cliente": "CLI010",
+      "nombre": "Petróleos y Energías de la Orinoquía",
+      "email": "finance@petroorinoquia.com",
+      "telefono": "6086712345",
+      "direccion": "Yopal",
+      "activo": true,
+      "saldo_pendiente": 0.0
+    },
+    {
+      "id_cliente": "CLI011",
+      "nombre": "ROSSANA PEÑA",
+      "email": "rossanapeña@gmail.com",
+      "telefono": "3202690017",
+      "direccion": "Calle 42 #92 A -10",
+      "activo": true,
+      "saldo_pendiente": 0.0
     }
   ],
   "productos": [
     {
       "id_producto": "PRD001",
       "nombre": "Licencia ERP Anual",
-      "descripcion": "Software ERP",
+      "descripcion": "Software ERP Gestión Integral",
       "precio_unitario": 4800000.0,
       "costo_unitario": 1200000.0,
-      "stock": 47,
+      "stock": 42,
       "activo": true
     },
     {
       "id_producto": "PRD002",
       "nombre": "Consultoría TI (hora)",
-      "descripcion": "Hora especializada",
+      "descripcion": "Hora desarrollador / arquitecto especialista",
       "precio_unitario": 250000.0,
       "costo_unitario": 80000.0,
-      "stock": 185,
+      "stock": 125,
       "activo": true
     },
     {
       "id_producto": "PRD003",
       "nombre": "Servidor Cloud (mes)",
-      "descripcion": "Instancia cloud",
+      "descripcion": "Instancia cloud VPS optimizada",
       "precio_unitario": 1500000.0,
       "costo_unitario": 600000.0,
-      "stock": 97,
+      "stock": 91,
+      "activo": true
+    },
+    {
+      "id_producto": "PRD004",
+      "nombre": "Soporte Técnico Mensual",
+      "descripcion": "Mesa de ayuda 24/7 corporativa",
+      "precio_unitario": 850000.0,
+      "costo_unitario": 350000.0,
+      "stock": 999,
+      "activo": true
+    },
+    {
+      "id_producto": "PRD005",
+      "nombre": "CortaFuegos / Firewall Hardware",
+      "descripcion": "Dispositivo de seguridad perimetral fisica",
+      "precio_unitario": 3200000.0,
+      "costo_unitario": 1950000.0,
+      "stock": 14,
+      "activo": true
+    },
+    {
+      "id_producto": "PRD006",
+      "nombre": "Auditoría de Ciberseguridad",
+      "descripcion": "Análisis de vulnerabilidades y pentesting",
+      "precio_unitario": 5500000.0,
+      "costo_unitario": 2100000.0,
+      "stock": 50,
+      "activo": true
+    },
+    {
+      "id_producto": "PRD007",
+      "nombre": "Capacitación de Personal (Curso)",
+      "descripcion": "Formación en metodologías ágiles y código limpio",
+      "precio_unitario": 1200000.0,
+      "costo_unitario": 400000.0,
+      "stock": 30,
+      "activo": true
+    },
+    {
+      "id_producto": "PRD008",
+      "nombre": "Copia de Seguridad Cloud (1TB)",
+      "descripcion": "Respaldo automatizado cifrado mensual",
+      "precio_unitario": 350000.0,
+      "costo_unitario": 110000.0,
+      "stock": 500,
       "activo": true
     }
   ],
@@ -62,8 +179,8 @@
       "id_factura": "FAC-2026-001",
       "id_cliente": "CLI001",
       "nombre_cliente": "Tech Solutions SAS",
-      "fecha_emision": "2026-05-24",
-      "fecha_vencimiento": "2026-06-30",
+      "fecha_emision": "2026-01-10",
+      "fecha_vencimiento": "2026-02-10",
       "lineas": [
         {
           "id_producto": "PRD001",
@@ -81,14 +198,14 @@
         }
       ],
       "estado": "PAGADA",
-      "notas": ""
+      "notas": "Pago recibido mediante transferencia bancaria"
     },
     {
       "id_factura": "FAC-2026-002",
       "id_cliente": "CLI002",
       "nombre_cliente": "Distribuidora Norte",
-      "fecha_emision": "2026-05-24",
-      "fecha_vencimiento": "2026-07-15",
+      "fecha_emision": "2026-02-14",
+      "fecha_vencimiento": "2026-03-15",
       "lineas": [
         {
           "id_producto": "PRD003",
@@ -99,14 +216,14 @@
         }
       ],
       "estado": "PAGADA",
-      "notas": ""
+      "notas": "Facturación mensual recurrente"
     },
     {
       "id_factura": "FAC-2026-003",
       "id_cliente": "CLI003",
       "nombre_cliente": "Consultores Andes",
-      "fecha_emision": "2026-05-24",
-      "fecha_vencimiento": "2026-05-10",
+      "fecha_emision": "2026-03-01",
+      "fecha_vencimiento": "2026-04-01",
       "lineas": [
         {
           "id_producto": "PRD002",
@@ -123,18 +240,205 @@
           "costo_unitario": 1200000.0
         }
       ],
-      "estado": "PENDIENTE",
-      "notas": ""
+      "estado": "PAGADA",
+      "notas": "Cliente solicitó prórroga - EN MORA VENCIDA"
     },
     {
       "id_factura": "FAC-2026-004",
+      "id_cliente": "CLI004",
+      "nombre_cliente": "SEBASTIAN GUTIERREZ GUAYACUNDO",
+      "fecha_emision": "2026-05-28",
+      "fecha_vencimiento": "2026-06-28",
+      "lineas": [
+        {
+          "id_producto": "PRD003",
+          "nombre_producto": "Servidor Cloud (mes)",
+          "cantidad": 1,
+          "precio_unitario": 1500000.0,
+          "costo_unitario": 600000.0
+        }
+      ],
+      "estado": "PAGADA",
+      "notas": "Generada vía GUI - Plazo regular de 30 días"
+    },
+    {
+      "id_factura": "FAC-2026-005",
+      "id_cliente": "CLI005",
+      "nombre_cliente": "Alimentos del Caribe ESP",
+      "fecha_emision": "2026-03-10",
+      "fecha_vencimiento": "2026-04-10",
+      "lineas": [
+        {
+          "id_producto": "PRD006",
+          "nombre_producto": "Auditoría de Ciberseguridad",
+          "cantidad": 2,
+          "precio_unitario": 5500000.0,
+          "costo_unitario": 2100000.0
+        },
+        {
+          "id_producto": "PRD008",
+          "nombre_producto": "Copia de Seguridad Cloud (1TB)",
+          "cantidad": 2,
+          "precio_unitario": 350000.0,
+          "costo_unitario": 110000.0
+        }
+      ],
+      "estado": "PAGADA",
+      "notas": "Requiere cobro coactivo - MORA CRÍTICA"
+    },
+    {
+      "id_factura": "FAC-2026-006",
+      "id_cliente": "CLI006",
+      "nombre_cliente": "Inversiones Cafeteras S.A.",
+      "fecha_emision": "2026-05-15",
+      "fecha_vencimiento": "2026-06-15",
+      "lineas": [
+        {
+          "id_producto": "PRD008",
+          "nombre_producto": "Copia de Seguridad Cloud (1TB)",
+          "cantidad": 1,
+          "precio_unitario": 350000.0,
+          "costo_unitario": 110000.0
+        }
+      ],
+      "estado": "PAGADA",
+      "notas": "Cobro ordinario corriente"
+    },
+    {
+      "id_factura": "FAC-2026-007",
+      "id_cliente": "CLI007",
+      "nombre_cliente": "Logística y Transportes Valle",
+      "fecha_emision": "2026-02-01",
+      "fecha_vencimiento": "2026-03-01",
+      "lineas": [
+        {
+          "id_producto": "PRD005",
+          "nombre_producto": "CortaFuegos / Firewall Hardware",
+          "cantidad": 1,
+          "precio_unitario": 3200000.0,
+          "costo_unitario": 1950000.0
+        },
+        {
+          "id_producto": "PRD004",
+          "nombre_producto": "Soporte Técnico Mensual",
+          "cantidad": 3,
+          "precio_unitario": 850000.0,
+          "costo_unitario": 350000.0
+        }
+      ],
+      "estado": "ANULADA",
+      "notas": "Abonado completo"
+    },
+    {
+      "id_factura": "FAC-2026-008",
+      "id_cliente": "CLI008",
+      "nombre_cliente": "Constructora e Inmobiliaria Horizonte",
+      "fecha_emision": "2026-04-10",
+      "fecha_vencimiento": "2026-05-10",
+      "lineas": [
+        {
+          "id_producto": "PRD001",
+          "nombre_producto": "Licencia ERP Anual",
+          "cantidad": 1,
+          "precio_unitario": 4800000.0,
+          "costo_unitario": 1200000.0
+        },
+        {
+          "id_producto": "PRD002",
+          "nombre_producto": "Consultoría TI (hora)",
+          "cantidad": 2,
+          "precio_unitario": 250000.0,
+          "costo_unitario": 80000.0
+        }
+      ],
+      "estado": "PAGADA",
+      "notas": "Reporta retraso contable interno - EN MORA"
+    },
+    {
+      "id_factura": "FAC-2026-009",
+      "id_cliente": "CLI010",
+      "nombre_cliente": "Petróleos y Energías de la Orinoquía",
+      "fecha_emision": "2026-05-01",
+      "fecha_vencimiento": "2026-05-31",
+      "lineas": [
+        {
+          "id_producto": "PRD006",
+          "nombre_producto": "Auditoría de Ciberseguridad",
+          "cantidad": 2,
+          "precio_unitario": 5500000.0,
+          "costo_unitario": 2100000.0
+        },
+        {
+          "id_producto": "PRD005",
+          "nombre_producto": "CortaFuegos / Firewall Hardware",
+          "cantidad": 1,
+          "precio_unitario": 3200000.0,
+          "costo_unitario": 1950000.0
+        },
+        {
+          "id_producto": "PRD002",
+          "nombre_producto": "Consultoría TI (hora)",
+          "cantidad": 10,
+          "precio_unitario": 250000.0,
+          "costo_unitario": 80000.0
+        }
+      ],
+      "estado": "PAGADA",
+      "notas": "Vencida recientemente por corte de mes corporativo"
+    },
+    {
+      "id_factura": "FAC-2026-010",
       "id_cliente": "CLI001",
       "nombre_cliente": "Tech Solutions SAS",
-      "fecha_emision": "2026-05-24",
-      "fecha_vencimiento": "2026-05-24",
-      "lineas": [],
-      "estado": "PENDIENTE",
-      "notas": "Importante crear las facturas"
+      "fecha_emision": "2026-04-15",
+      "fecha_vencimiento": "2026-05-15",
+      "lineas": [
+        {
+          "id_producto": "PRD004",
+          "nombre_producto": "Soporte Técnico Mensual",
+          "cantidad": 1,
+          "precio_unitario": 850000.0,
+          "costo_unitario": 350000.0
+        }
+      ],
+      "estado": "PAGADA",
+      "notas": "Débito automático procesado"
+    },
+    {
+      "id_factura": "FAC-2026-011",
+      "id_cliente": "CLI002",
+      "nombre_cliente": "Distribuidora Norte",
+      "fecha_emision": "2026-05-01",
+      "fecha_vencimiento": "2026-06-01",
+      "lineas": [
+        {
+          "id_producto": "PRD007",
+          "nombre_producto": "Capacitación de Personal (Curso)",
+          "cantidad": 3,
+          "precio_unitario": 1200000.0,
+          "costo_unitario": 400000.0
+        }
+      ],
+      "estado": "PAGADA",
+      "notas": "Pago anticipado para inicio de talleres"
+    },
+    {
+      "id_factura": "FAC-2026-012",
+      "id_cliente": "CLI007",
+      "nombre_cliente": "Logística y Transportes Valle",
+      "fecha_emision": "2026-05-20",
+      "fecha_vencimiento": "2026-06-20",
+      "lineas": [
+        {
+          "id_producto": "PRD002",
+          "nombre_producto": "Consultoría TI (hora)",
+          "cantidad": 20,
+          "precio_unitario": 250000.0,
+          "costo_unitario": 80000.0
+        }
+      ],
+      "estado": "PAGADA",
+      "notas": "Hito de desarrollo de software aprobado y cancelado"
     }
   ]
 }
